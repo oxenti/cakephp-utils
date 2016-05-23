@@ -48,7 +48,7 @@ class UploadableBehavior extends Behavior
             'removeFileOnUpdate' => true,
             'removeFileOnDelete' => true,
             'field' => 'id',
-            'path' => '{ROOT}{WEBROOT}{DS}uploads{DS}{model}{DS}{field}{DS}',
+            'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}{field}{DS}',
             'fileName' => '{ORIGINAL}',
             'entityReplacements' => [ ],
             'accept_type' => null /* can be 'image'*/
@@ -264,8 +264,8 @@ class UploadableBehavior extends Behavior
         $uploadPath = $this->_getPath($entity, $field, ['file' => true]);
 
         // creating the path if not exists
-        if (!is_dir($this->_getPath($entity, $field, ['root' => false, 'file' => false]))) {
-            $this->_mkdir($this->_getPath($entity, $field, ['root' => false, 'file' => false]), 0777, true);
+        if (!is_dir($this->_getPath($entity, $field, ['root' => true, 'file' => false]))) {
+            $this->_mkdir($this->_getPath($entity, $field, ['root' => true, 'file' => false]), 0777, true);
         }
 
         // upload the file and return true
@@ -406,12 +406,14 @@ class UploadableBehavior extends Behavior
         $builtPath = str_replace(array_keys($replacements), array_values($replacements), $path);
 
         if (!$options['root']) {
-            $builtPath = str_replace(ROOT . DS . 'webroot' . DS, '', $builtPath);
+            $builtPath = str_replace(ROOT . DIRECTORY_SEPARATOR . 'webroot' . DIRECTORY_SEPARATOR, '', $builtPath);
         }
 
         if ($options['file']) {
             $builtPath = $builtPath . $this->_getFileName($entity, $field);
         }
+
+        $builtPath = str_replace(DIRECTORY_SEPARATOR . DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $builtPath);
 
         return $builtPath;
     }
@@ -532,6 +534,11 @@ class UploadableBehavior extends Behavior
         if (is_null($file)) {
             $fieldConfig = $this->config($field);
             $file = $entity->getOriginal($fieldConfig['fields']['filePath']);
+        }
+
+        if (!empty($file)) {
+            $fileName = substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1);
+            $file = empty($fileName) ? $file : $this->_getPath($entity, $field, ['file' => false]) . $fileName;
         }
 
         $_file = new File($file);

@@ -41,11 +41,13 @@ class UploadableBehaviorTest extends TestCase
 
         $connection = ConnectionManager::get('test');
 
-        $this->Articles = $this->getMock('Cake\ORM\Table', ['_mkdir', '_moveUploadedFile'], [
+        $this->Articles = $this->getMock('Cake\ORM\Table', ['_moveUploadedFile'], [
             ['table' => 'articles', 'connection' => $connection]
         ]);
 
         $this->_uploadPath = ROOT . 'webroot' . DS . 'uploads';
+        $this->_uploadPath = ROOT . DS . 'webroot' . DS . 'uploads';
+        // $this->_uploadPath = 'uploads';
     }
 
     /**
@@ -104,7 +106,7 @@ class UploadableBehaviorTest extends TestCase
             ],
             'fieldWithCustomSettings2' => [
                 'field' => 'user_id',
-                'path' => '{ROOT}{WEBROOT}{DS}uploads{DS}{model}{DS}',
+                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}',
                 'fileName' => '{field}.{extension}',
             ],
         ]);
@@ -120,7 +122,7 @@ class UploadableBehaviorTest extends TestCase
         $this->assertTrue($action['fieldWithoutSettings']['removeFileOnUpdate']);
         $this->assertTrue($action['fieldWithoutSettings']['removeFileOnDelete']);
         $this->assertEquals("id", $action['fieldWithoutSettings']['field']);
-        $this->assertEquals("{ROOT}{WEBROOT}{DS}uploads{DS}{model}{DS}{field}{DS}", $action['fieldWithoutSettings']['path']);
+        $this->assertEquals("{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}{field}{DS}", $action['fieldWithoutSettings']['path']);
         $this->assertEquals("{ORIGINAL}", $action['fieldWithoutSettings']['fileName']);
 
         // testing field 2
@@ -133,7 +135,7 @@ class UploadableBehaviorTest extends TestCase
 
         // testing field 3
         $this->assertEquals("user_id", $action['fieldWithCustomSettings2']['field']);
-        $this->assertEquals("{ROOT}{WEBROOT}{DS}uploads{DS}{model}{DS}", $action['fieldWithCustomSettings2']['path']);
+        $this->assertEquals("{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}", $action['fieldWithCustomSettings2']['path']);
         $this->assertEquals("{field}.{extension}", $action['fieldWithCustomSettings2']['fileName']);
     }
 
