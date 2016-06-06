@@ -475,7 +475,7 @@ class UploadableBehavior extends Behavior
         $fileName = $config['fileName'];
 
         $replacements = [
-            '{ORIGINAL}' => $_upload['name'],
+            '{ORIGINAL}' => str_replace(' ', '_', $_upload['name']),
             '{field}' => $entity->get($config['field']),
             '{extension}' => $extension,
             '{DS}' => DIRECTORY_SEPARATOR,
